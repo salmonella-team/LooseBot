@@ -1,0 +1,6 @@
+Doc/
+test/
+.env
+*__pycache__*
+.vscode/
+
