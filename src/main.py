@@ -1,7 +1,6 @@
 # main.py
 
-# とりあえず単体のメッセージルームに対応
-
+from locale import LC_ALL
 from discord import channel
 import setting
 import discord
@@ -9,17 +8,14 @@ import discord
 import datetime
 import locale
 import hashlib
+import requests
 
 DISCORD_TOKEN = setting.DISCORD_TOKEN
-DEBUG_ROOM_ID = setting.DEBUG_ROOM_ID
-DEBUG_SEND_ROOM_ID = setting.DEBUG_SEND_ROOM_ID
 
-locale.setlocale(locale.LC_TIME, 'ja_JP')
-
+locale.setlocale(locale.LC_ALL, 'ja_JP.UTF-8')
 
 client = discord.Client()
 
-num = 1
 def today_string() -> str:
     dt = datetime.datetime.today()
     send_message_date = dt.strftime('%Y/%m/%d(%a) %H:%M:%S')
@@ -31,16 +27,16 @@ def get_hash_id(athor_id) -> str:
     hs = hashlib.sha256(athor_id.encode()).hexdigest()
     return hs
 
+def save_pic(pic_url, save_name):
+    r = requests.get(pic_url, stream=True)
+    if r.status_code == 200:
+        with open(save_name, 'wb') as f:
+            f.write(r.content)
+
+
 @client.event
-async def on_ready() -> str:
-    """
-    Start on Discord Bot
-
-
-    print UserName
-    """
+async def on_ready():
     print("Start on {0.user}".format(client))
-    return client
 
 @client.event
 async def on_guild_channel_create(channel):
@@ -61,13 +57,10 @@ async def on_message(message):
     Message Delete -> Send Message Anonymous User
     """
 
-    global num
-
     if message.author.bot:
         return
     
     channel = client.get_channel(message.channel.id)
-    print(channel.name)
     if channel.name[0:1] == "☆":
 
         # ID用の日付取得
@@ -75,6 +68,8 @@ async def on_message(message):
 
         # 送信されたメッセージの取得
         send_message = message.content
+
+
 
         # 送信されたメッセージの削除
         await message.delete()
@@ -97,8 +92,10 @@ async def on_message(message):
 
         # レス番号の確認
 
-        async for res_message in channel.history(limit=1):
-            res_num = int(res_message.embeds[0].title[0:3])
+        async for res_message in channel.history(limit=1000):
+            if len(res_message.embeds):
+                res_num = int(res_message.embeds[0].title[0:3])
+                break
 
         channel = client.get_channel(message.channel.id)
 
@@ -113,6 +110,15 @@ async def on_message(message):
         res_num += 1
         embed = discord.Embed(title=str(res_num).zfill(3) + "  腸まで届く名無しさん  " + send_message_date + "  ID:" + hs.upper()[10:17], description=send_message, color=0x000000)
         await channel.send(embed=embed)
+
+        # 画像がある場合保持
+        if len(message.attachments):
+            pic_url = message.attachments[0].url
+            save_name = "riamu.jpg"
+            save_pic(pic_url, save_name)
+            discord_img = discord.File(save_name)
+            await message.channel.send(file=discord_img)
+
         pass
 
 client.run(DISCORD_TOKEN)
