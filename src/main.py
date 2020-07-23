@@ -1,6 +1,5 @@
 # main.py
 
-from locale import LC_ALL
 from discord import channel
 import setting
 import discord
@@ -9,6 +8,7 @@ import datetime
 import locale
 import hashlib
 import requests
+import os
 
 DISCORD_TOKEN = setting.DISCORD_TOKEN
 
@@ -69,10 +69,15 @@ async def on_message(message):
         # 送信されたメッセージの取得
         send_message = message.content
 
-
+        if len(message.attachments):
+            pic_url = message.attachments[0].url
+            save_name = "riamu.jpg"
+            save_pic(pic_url, save_name)
+            discord_img = discord.File(save_name)
 
         # 送信されたメッセージの削除
         await message.delete()
+
 
         # チャンネルをフェッチ
         # channel = client.get_channel(int(DEBUG_SEND_ROOM_ID))
@@ -113,11 +118,9 @@ async def on_message(message):
 
         # 画像がある場合保持
         if len(message.attachments):
-            pic_url = message.attachments[0].url
-            save_name = "riamu.jpg"
-            save_pic(pic_url, save_name)
-            discord_img = discord.File(save_name)
             await message.channel.send(file=discord_img)
+            os.remove("riamu.jpg")
+        
 
         pass
 
