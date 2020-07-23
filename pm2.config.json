@@ -1,0 +1,21 @@
+{
+    "apps": [{
+        "name": "looseBotCore",
+        "script": "src/main.py",
+        "args": [""],
+        "wait_ready": true,
+        "autorestart": false,
+        "max_restarts": 5,
+        "interpreter" : "pipenv",
+        "interpreter_args": "run python3"
+    },{
+        "name": "GibaraBot",
+        "script": "src/gibara.py",
+        "args": [""],
+        "wait_ready": true,
+        "autorestart": false,
+        "max_restarts": 5,
+        "interpreter" : "pipenv",
+        "interpreter_args": "run python3"
+    }]
+}
