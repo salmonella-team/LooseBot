@@ -112,13 +112,6 @@ async def on_message(message):
             if len(res_message.embeds):
                 res_num = int(res_message.embeds[0].title[0:3])
                 break
-        
-        # message_history = channel.history(limit=1000)
-
-        # x = get_res_number(message_history)
-        # print(x)
-
-        # channel = client.get_channel(message.channel.id)
 
         """
         最新のメッセージの取り方を確認
@@ -128,6 +121,7 @@ async def on_message(message):
         レス番号だけ取り出す
         embeds[0].title[0:3]
         """
+
         res_num += 1
         embed = discord.Embed(title=str(res_num).zfill(3) + "  腸まで届く名無しさん  " + send_message_date + "  ID:" + hs[10:17], description=send_message, color=0x000000)
         await channel.send(embed=embed)
@@ -136,8 +130,6 @@ async def on_message(message):
         if len(message.attachments):
             await message.channel.send(file=discord_img)
             os.remove("riamu.jpg")
-
-        pass
 
 
 client.run(DISCORD_TOKEN)
