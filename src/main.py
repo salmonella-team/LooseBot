@@ -99,7 +99,7 @@ async def on_message(message):
             if len(res_message.embeds):
                 res_num = int(res_message.embeds[0].title[0:4])
                 break
-        
+
         if res_num == 1001:
             return
         elif res_num >= 1001:
