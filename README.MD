@@ -2,7 +2,7 @@
 
 ## インストール
 
-pipenv install
+`pipenv install`
 
 ## 使用方法
 
