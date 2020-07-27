@@ -37,7 +37,7 @@ def save_pic(pic_url, save_name):
             f.write(r.content)
 
 
-def get_res_number(message_history):
+def get_res_number(message_history) -> int:
     for res_message in message_history:
         if len(res_message.embeds):
             res_num = int(res_message.embeds[0].title[0:3])
@@ -90,28 +90,22 @@ async def on_message(message):
         # 送信されたメッセージの削除
         await message.delete()
 
-
-        # チャンネルをフェッチ
-        # channel = client.get_channel(int(DEBUG_SEND_ROOM_ID))
-
         # ハッシュの作成
         athor_id = str(message.author.id)
         hs = get_hash_id(athor_id)
 
-        """
-        表示例
-        001 腸まで届く名無しさん YYYY/MMM/DD(A) %H:%M:%S ID:XXXXXXX
-        テスト
-
-        IDは個人IDと日付を連結させた文字列をハッシュ化し真ん中を切り取ったもの
-        """
-
         # レス番号の確認
-
         async for res_message in channel.history(limit=1000):
             if len(res_message.embeds):
-                res_num = int(res_message.embeds[0].title[0:3])
+                res_num = int(res_message.embeds[0].title[0:4])
                 break
+        
+        if res_num == 1001:
+            return
+        elif res_num >= 1001:
+            embed = discord.Embed(title="1001" + "  1001  " + "Over1000 Thread", description="このスレッドは１０００を超えました。\nもう書けないので、新しいスレッドを立ててくださいです。。。", color=0x000000)
+            await channel.send(embed=embed)
+            return
 
         """
         最新のメッセージの取り方を確認
@@ -120,8 +114,19 @@ async def on_message(message):
 
         レス番号だけ取り出す
         embeds[0].title[0:3]
+
+        表示例
+        001 腸まで届く名無しさん YYYY/MMM/DD(A) %H:%M:%S ID:XXXXXXX
+        テスト
+
+        IDは個人IDと日付を連結させた文字列をハッシュ化し真ん中を切り取ったもの
+
+        1001 1001 Over 1000Thread
+        このスレッドは１０００を超えました。
+        もう書けないので、新しいスレッドを立ててくださいです。。。
         """
 
+        # レス
         res_num += 1
         embed = discord.Embed(title=str(res_num).zfill(3) + "  腸まで届く名無しさん  " + send_message_date + "  ID:" + hs[10:17], description=send_message, color=0x000000)
         await channel.send(embed=embed)
