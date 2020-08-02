@@ -1,5 +1,7 @@
 # 匿名化する奴
 
+![Deploy](https://github.com/salmonella-team/LooseBot/workflows/Python%20application/badge.svg)
+
 ## インストール
 
 `pipenv install`
