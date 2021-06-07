@@ -13,16 +13,17 @@ import os
 DISCORD_TOKEN = setting.DISCORD_TOKEN
 BOT_SEED = setting.BOT_SEED
 
-locale.setlocale(locale.LC_ALL, 'ja_JP.UTF-8')
-
 client = discord.Client()
 
+
+# 日付を文字列で返す
 def today_string() -> str:
     dt = datetime.datetime.today()
     send_message_date = dt.strftime('%Y/%m/%d(%a) %H:%M:%S')
     return send_message_date
 
 
+# 日付と送信したIDを連結してハッシュ化
 def get_hash_id(athor_id) -> str:
     dt = datetime.datetime.today()
     athor_id += dt.strftime('%Y/%m/%d(%a)')
@@ -30,6 +31,7 @@ def get_hash_id(athor_id) -> str:
     return hs
 
 
+# 画像を一時的に保存する
 def save_pic(pic_url, save_name):
     r = requests.get(pic_url, stream=True)
     if r.status_code == 200:
@@ -37,6 +39,7 @@ def save_pic(pic_url, save_name):
             f.write(r.content)
 
 
+# 最新のレス番号を取得
 def get_res_number(message_history) -> int:
     for res_message in message_history:
         if len(res_message.embeds):
@@ -45,13 +48,16 @@ def get_res_number(message_history) -> int:
             return res_num
 
 
+# 起動メッセージ
 @client.event
 async def on_ready():
     print("Start on {0.user}".format(client))
 
 
+# チャンネル作成時に発火
 @client.event
 async def on_guild_channel_create(channel):
+    # チャンネルの頭に☆がついていたら匿名チャンネル判定
     if channel.name[0:1] == "☆":
         res_num = 1
         send_message_date = today_string()
@@ -63,12 +69,14 @@ async def on_guild_channel_create(channel):
         await channel.send(embed=embed)
 
 
+# ここからメイン
 @client.event
 async def on_message(message):
     """
     Message Delete -> Send Message Anonymous User
     """
 
+    # Botだったら反応しない
     if message.author.bot:
         return
 
