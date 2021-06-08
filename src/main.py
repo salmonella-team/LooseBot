@@ -12,6 +12,7 @@ import os
 
 DISCORD_TOKEN = setting.DISCORD_TOKEN
 BOT_SEED = setting.BOT_SEED
+MAKE_CHANNEL_CATEGORY_ID = setting.CATEGORY_ID
 
 client = discord.Client()
 
@@ -79,6 +80,19 @@ async def on_message(message):
     # Botだったら反応しない
     if message.author.bot:
         return
+    
+    # スレ立て機能
+    # argsが今の書き方だと使えないので筋肉実装
+    if message.content[0:6] == "/mk2ch":
+        make_channel_message = message.content.split()
+        channel = client.get_channel(message.channel.id)
+        if len(make_channel_message) == 2:
+            category_id = int(MAKE_CHANNEL_CATEGORY_ID)
+            category = channel.guild.get_channel(category_id)
+            new_channel = await channel.guild.create_text_channel(name="☆" + make_channel_message[1], category=category)
+        else:
+            await channel.send("引数が不正です")
+
 
     channel = client.get_channel(message.channel.id)
     if channel.name[0:1] == "☆":
